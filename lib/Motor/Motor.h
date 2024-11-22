@@ -12,4 +12,5 @@ class Motor
     void setup();
     void gira_horario(int vel);
     void gira_antihorario(int vel);
+    void freia ();
 };

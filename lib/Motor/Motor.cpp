@@ -28,3 +28,10 @@ void Motor::gira_antihorario(int vel)
         digitalWrite(this->p2,HIGH);
         analogWrite(this->enable,vel);
     }
+
+void Motor :: freia ()
+    {
+        digitalWrite(this->p1,HIGH);
+        digitalWrite(this->p2,HIGH);
+        analogWrite(this->enable,0);
+    }

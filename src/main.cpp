@@ -17,16 +17,32 @@ void setup()
 
 void loop() 
 {
+  test_motor_w_potentiometer();
+
   delay(1000);
 }
 
 void test_motor_w_potentiometer()
 {
-  char offset = 127;
 
-  long speed_m1 = map(analogRead(A0), 0, 1023, 0, 255);
-  long speed_m2 = map(analogRead(A1), 0, 1023, 0, 255);
-  
-  M1.gira_horario(speed_m1 + offset /* 0 ~ 128 => 128 -> 255 */);
-  M1.gira_antihorario(speed_m1 + offset /* -128 ~ 0 */);
+  long speed_m1 = map(analogRead(A0), 0, 1023, -255, 255);
+  long speed_m2 = map(analogRead(A1), 0, 1023, -255, 255);
+  if((speed_m1>=-10)&&(speed_m1<=10))
+    M1.freia();
+    else{
+  if(speed_m1<0)
+      M1.gira_antihorario(-speed_m1);
+  else
+      M1.gira_horario(speed_m1);
+    }
+
+    if((speed_m2>=-10)&&(speed_m2<=10))
+    M2.freia();
+    else{
+  if(speed_m2<0)
+      M2.gira_antihorario(-speed_m2);
+  else
+      M2.gira_horario(speed_m2);
+    }
+  // M2.gira_antihorario(speed_m2);
 }
