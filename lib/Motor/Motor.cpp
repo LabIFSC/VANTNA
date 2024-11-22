@@ -26,5 +26,5 @@ void Motor::gira_antihorario(int vel)
     {
         digitalWrite(this->p1,LOW);
         digitalWrite(this->p2,HIGH);
-        analogWrite(this->enable,vel);    
+        analogWrite(this->enable,vel);
     }

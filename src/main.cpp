@@ -5,6 +5,8 @@
 Motor M1(7,6,3);
 Motor M2(5,4,2);
 
+void test_motor_w_potentiometer();
+
 void setup() 
 {
   // put your setup code here, to run once:
@@ -15,6 +17,16 @@ void setup()
 
 void loop() 
 {
-  M2.gira_horario(255);
   delay(1000);
+}
+
+void test_motor_w_potentiometer()
+{
+  char offset = 127;
+
+  long speed_m1 = map(analogRead(A0), 0, 1023, 0, 255);
+  long speed_m2 = map(analogRead(A1), 0, 1023, 0, 255);
+  
+  M1.gira_horario(speed_m1 + offset /* 0 ~ 128 => 128 -> 255 */);
+  M1.gira_antihorario(speed_m1 + offset /* -128 ~ 0 */);
 }
