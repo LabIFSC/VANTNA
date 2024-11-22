@@ -1,22 +1,20 @@
 #include <Arduino.h>
+#include <Motor.h>
 
-// put function declarations here:
-int myFunction(int, int);
+// Cria os objetos motor1 e motor2 utilizando o construtor Motor(pin1 , pin2, enable)
+Motor M1(7,6,3);
+Motor M2(5,4,2);
 
-void setup() {
+void setup() 
+{
   // put your setup code here, to run once:
-  pinMode(6, OUTPUT);
+  M1.setup();
+  M2.setup();
+  pinMode(A0,INPUT);
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  digitalWrite(6, HIGH);
+void loop() 
+{
+  M2.gira_horario(255);
   delay(1000);
-  digitalWrite(6, LOW);
-  delay(1000);
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
 }
