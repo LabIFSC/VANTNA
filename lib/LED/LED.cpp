@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include "LED.h"
 
+/** TODO: Make a class based into this lib */
+
 int contador = 0;
 unsigned long delayBotao;
 int estadoBotaoAnt = btNENHUM;
