@@ -1,3 +1,6 @@
+/**
+ * Modelo: HMC5883L GY-273
+ */
 #define BUSSOLA_ANGULO_CORRECAO 0 // 0 ~ 359
 
 class Bussola
