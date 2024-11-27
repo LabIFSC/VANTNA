@@ -25,8 +25,6 @@ void setup()
 void loop() 
 {
   test_motor_w_potentiometer();
-
-  delay(1000);
 }
 
 void test_motor_w_potentiometer()
