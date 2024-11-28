@@ -6,7 +6,7 @@ void assert_one_plus_one_equal_two()
 
   int r = a + b;
 
-  TEST_ASSERT_EQUAL_CHAR(3, r);
+  TEST_ASSERT_EQUAL_CHAR(2, r);
 }
 
 int main( int argc, char **argv)
