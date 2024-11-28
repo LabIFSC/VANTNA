@@ -1,3 +1,4 @@
+// https://docs.arduino.cc/libraries/liquidcrystal/
 #include <LiquidCrystal.h>
 
 //******* CONFIGURACAO DO PROJETO *********
