@@ -1,22 +1,19 @@
-/**
- * Modelo: HMC5883L GY-273
- */
-#define BUSSOLA_ANGULO_CORRECAO 0 // 0 ~ 359
+
+#ifndef Bussola_h
+#define Bussola_h
 
 class Bussola
 {
-    public:
-        int direcao;
-        int direcao_ant;
-        int direcao_delta;
+	public:
+        
+    // Constructor
+	  Bussola();
+	////////////////////////////////////////
+	 
+  float getAngulo();
+  void setUp();
 
-        int periodo_ms;
-
-    private:
-        // amostragem da bussula
-
-        /** 
-         * Calcula o delta da direção
-         */
-        void processar();
+	////////////////////////////////////////
 };
+
+#endif
