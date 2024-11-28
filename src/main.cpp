@@ -8,16 +8,16 @@
 Motor M1(PIN7, PIN6, PIN3); /** In1 | In2 | EnableA */
 Motor M2(PIN5, PIN4, PIN2); /** In3 | In4 | EnableB */
 
-LiquidCrystal lcd_test;
+// LiquidCrystal lcd_test;
 
 #define LCD_WIDTH 16
 #define LCD_HEIGHT 2
 
 void InitLCD()
 {
-  lcd_test.begin(LCD_WIDTH, LCD_HEIGHT);
-  lcd_test.clear();
-  lcd_test.setCursor(0, 0);
+  // lcd_test.begin(LCD_WIDTH, LCD_HEIGHT);
+  // lcd_test.clear();
+  // lcd_test.setCursor(0, 0);
 }
 
 void setup() 
