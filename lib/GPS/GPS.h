@@ -38,8 +38,8 @@ public:
         }
 
         // Teste num of satellites
-        // Serial.print(" SAT =");
-        // Serial.println(gps.satellites() == TinyGPS::GPS_INVALID_SATELLITES ? 0 : gps.satellites());
+        Serial.print(" SAT =");
+        Serial.println(gps.satellites() == TinyGPS::GPS_INVALID_SATELLITES ? 0 : gps.satellites());
 
         if (newData) // false
         {
