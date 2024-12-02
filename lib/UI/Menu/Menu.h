@@ -4,6 +4,12 @@
 
 typedef unsigned char MID;
 
+class Option
+{
+    String nome;
+    void* acao;
+};
+
 class Menu
 {
     MID id;
@@ -13,12 +19,6 @@ class Menu
     public:
         MID GetID() const { return id; }
         MID GetAnterior() const { return menu_anterior; }
-};
-
-class Option
-{
-    String nome;
-    void* acao;
 };
 
 // void enviar_coords() { ... };
