@@ -2,9 +2,17 @@
 
 #define MENU_OPCOES_N 6
 
+typedef unsigned char MID;
+
 class Menu
-{  
+{
+    MID id;
+    MID menu_anterior;
     Option opcoes[MENU_OPCOES_N];
+
+    public:
+        MID GetID() const { return id; }
+        MID GetAnterior() const { return menu_anterior; }
 };
 
 class Option
