@@ -23,12 +23,6 @@
 class UIContext
 {
     private:
-        UIContext()
-        {
-            // Hardcoded display device to LCD
-            display_ = new LCD();
-        };
-
         DisplayDevice* display_;
 
         MID menu_idx;
@@ -41,17 +35,12 @@ class UIContext
         static UIContext& self_;
 
     public:
-        /**
-         * Singletons should not be cloneable.
-         */
-        UIContext(UIContext &other) = delete;
 
-        /**
-         * Singletons should not be assignable.
-         */
-        void operator=(const UIContext &) = delete;
-
-        static UIContext& GetInstance();
+        UIContext()
+        {
+            // Hardcoded display device to LCD
+            display_ = new LCD();
+        };
 
         DisplayDevice* GetRawDisplay()
         {

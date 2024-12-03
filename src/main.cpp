@@ -17,6 +17,8 @@ Motor M2(PIN5, PIN4, PIN2); /** In3 | In4 | EnableB */
 Bussola B;
 GPS GPS_A;
 
+static UIContext UI;
+
 void setup() 
 {
   /** Inicializar subsistemas */
@@ -28,15 +30,13 @@ void setup()
 
   // - Display LCD (IO)
   // - Teclado (IO)
-
-  UIContext::GetInstance();
 }
 
 void loop() 
 {
-  UIContext::GetInstance().GetRawDisplay()->Print("Rodou");
+  UI.GetRawDisplay()->Print("Rodou");
   delay(1000);
-  UIContext::GetInstance().GetRawDisplay()->Clear();
+  UI.GetRawDisplay()->Clear();
 
   // TODO: Ouvir por chamadas através dos botões para funções especificadas
   // callbacks[buttons] = { [MENU_A] = enviar_coordenadas(...) }
