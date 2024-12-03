@@ -1,3 +1,4 @@
+#pragma once
 #include "Arduino.h"
 
 #define MENU_OPCOES_N 6
@@ -17,6 +18,11 @@ class Menu
     Option opcoes[MENU_OPCOES_N];
 
     public:
+        Menu(MID identifier = 0)
+        {
+            id = identifier;
+        }
+
         MID GetID() const { return id; }
         MID GetAnterior() const { return menu_anterior; }
 };
