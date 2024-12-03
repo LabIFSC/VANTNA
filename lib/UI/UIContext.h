@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Display.h"
+#include "LCD.h"
 #include "Menu/Menu.h"
 
 /** UI Config */
