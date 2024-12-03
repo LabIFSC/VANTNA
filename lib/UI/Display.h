@@ -1,3 +1,4 @@
+#pragma once
 #include "WString.h"
 
 class DisplayDevice
