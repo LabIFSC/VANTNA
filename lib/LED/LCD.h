@@ -1,8 +1,7 @@
 #include "Display.h"
-#include "LiquidCrystal.h"
 
-#define LCD_WIDTH 2
-#define LCD_HEIGHT 2
+#define LCD_WIDTH 0x0F
+#define LCD_HEIGHT 0x02
 
 //******* CONFIGURACAO DO LCD *********
 #define PIN_Botoes A0
@@ -30,12 +29,21 @@ class LCD : public DisplayDevice
     {
         driver->begin(LCD_WIDTH, LCD_HEIGHT);
         driver->clear();
-        driver->home();
+    }
+
+    LiquidCrystal* GetRawDevice()
+    {
+        return driver;
     }
 
     void Print(const String&s)
     {
         driver->print(s);
+    }
+
+    void PrintLine(const String&s)
+    {
+        driver->println(s);
     }
 
     void Clear()

@@ -34,9 +34,10 @@ void setup()
 
 void loop() 
 {
-  UI.GetRawDisplay()->Print("Rodou");
-  delay(1000);
-  UI.GetRawDisplay()->Clear();
+  // UI.GetRawDisplay()->Print("Rodou");
+  UI.Draw();
+
+  // Exibir lista de opcoes do menu principal
 
   // TODO: Ouvir por chamadas através dos botões para funções especificadas
   // callbacks[buttons] = { [MENU_A] = enviar_coordenadas(...) }
