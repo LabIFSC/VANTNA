@@ -5,16 +5,19 @@
 
 typedef unsigned char MID;
 
-class Option
+struct Option
 {
     String nome;
-    void* acao;
+    void (*acao)(void);
 };
 
 class Menu
 {
     MID id;
     MID menu_anterior;
+
+    protected:
+    unsigned char n_opts;
     Option opcoes[MENU_OPCOES_N];
 
     public:
@@ -24,6 +27,8 @@ class Menu
         }
 
         MID GetID() const { return id; }
+        const Option* GetOptions() const { return opcoes; }
+        const unsigned char GetNumOptions() const { return n_opts; }
         MID GetAnterior() const { return menu_anterior; }
 };
 

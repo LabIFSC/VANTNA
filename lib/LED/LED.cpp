@@ -29,6 +29,7 @@ void estadoBotao(int botao) {
         delayBotao = millis();
      }
   }
+
   estadoBotaoAnt = botao;
 }
 

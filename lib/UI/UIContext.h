@@ -3,8 +3,8 @@
 #include "UISettings.h"
 #include "Display.h"
 #include "LCD.h"
-#include "Menu/Menu.h"
 #include "Menu/MainMenu.h"
+#include "Menu/ConfigMenu.h"
 
 /**
  * TODO: Adicionar documentação de uso
@@ -26,8 +26,12 @@ class UIContext
         void InitMenus()
         {
             MainMenu main; // TODO: Testar se não causa SegFault;
+            ConfigMenu config; // TODO: Testar se não causa SegFault;
 
             RegistrarMenu(main);
+            RegistrarMenu(config);
+
+            this->menu_idx = 0;
         }
 
     protected:
@@ -39,12 +43,46 @@ class UIContext
         {
             // Hardcoded display device to LCD
             display_ = new LCD();
-        };
+
+            InitMenus();
+        }
 
         DisplayDevice* GetRawDisplay()
         {
             return display_;
         }
+
+        //#region Drawing
+
+        void Draw()
+        {
+            Menu m = MenuAtual();
+
+            // ... for each menu
+
+            LiquidCrystal* rawDevice = display_->GetRawDevice();
+
+
+            unsigned char bound = m.GetNumOptions();
+            const Option* opts = m.GetOptions();
+
+            unsigned char filled_row = 0;
+
+            rawDevice->print(opts[0].nome);
+            rawDevice->setCursor(0, 1);
+            rawDevice->println(opts[1].nome);
+
+            // for(int i = 0; i < bound; i++)
+            // {
+            //     // rawDevice->print(opts[i].nome);
+            //     // rawDevice->setCursor(0, i);
+            // }
+
+            delay(500);
+            rawDevice->clear();
+        }
+
+        //#endregion
 
         const Menu& MenuAtual()
         {
@@ -72,6 +110,8 @@ class UIContext
 
         /**
          * Usada para registrar os menus durante runtime.
+         * 
+         * Incrementa `menu_counter`
          * Para a plataforma de protótipo, esse caso é efetivo o suficiente
          * pois permite adicionar novas telas sem ter que lidar com o controle
          * da posição da memória do Menu em relação ao seu MID.
@@ -84,6 +124,7 @@ class UIContext
                 return false;
 
             menus[menu_id] = menu;
+            menu_counter++;
 
             return true;
         }
