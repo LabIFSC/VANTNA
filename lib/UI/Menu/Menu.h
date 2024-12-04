@@ -5,11 +5,10 @@
 
 typedef unsigned char MID;
 
-class Option
+struct Option
 {
-    public:
     String nome;
-    void* acao;
+    void (*acao)(void);
 };
 
 class Menu

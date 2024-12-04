@@ -3,8 +3,8 @@
 #include "UISettings.h"
 #include "Display.h"
 #include "LCD.h"
-#include "Menu/Menu.h"
 #include "Menu/MainMenu.h"
+#include "Menu/ConfigMenu.h"
 
 /**
  * TODO: Adicionar documentação de uso
@@ -26,8 +26,10 @@ class UIContext
         void InitMenus()
         {
             MainMenu main; // TODO: Testar se não causa SegFault;
+            ConfigMenu config; // TODO: Testar se não causa SegFault;
 
             RegistrarMenu(main);
+            RegistrarMenu(config);
 
             this->menu_idx = 0;
         }
@@ -108,6 +110,8 @@ class UIContext
 
         /**
          * Usada para registrar os menus durante runtime.
+         * 
+         * Incrementa `menu_counter`
          * Para a plataforma de protótipo, esse caso é efetivo o suficiente
          * pois permite adicionar novas telas sem ter que lidar com o controle
          * da posição da memória do Menu em relação ao seu MID.
@@ -120,6 +124,7 @@ class UIContext
                 return false;
 
             menus[menu_id] = menu;
+            menu_counter++;
 
             return true;
         }

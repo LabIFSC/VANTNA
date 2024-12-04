@@ -1,16 +1,17 @@
 #include "Menu.h"
 #include "UISettings.h"
 
+// TODO: Implementar
+void ExecMission();
+void OpenSettings();
+
 class MainMenu : public Menu
 {
   public:
     MainMenu() : Menu(MID_MAIN)
     {
-      opcoes[0].nome = "Executar";
-      opcoes[0].acao = (void*)0;
-
-      opcoes[1].nome = "Configurar";
-      opcoes[1].acao = (void*)0;
+      opcoes[0] = { "Executar", ExecMission };
+      opcoes[1] = { "Configurar", OpenSettings };
 
       this->n_opts = 2;
     }
