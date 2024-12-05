@@ -2,8 +2,6 @@
 #include "UISettings.h"
 
 // TODO: Implementar
-void ExecMission();
-void OpenSettings();
 
 class MainMenu : public Menu
 {
@@ -15,4 +13,14 @@ class MainMenu : public Menu
 
       this->n_opts = 2;
     }
+
+    static void ExecMission(void)
+    {
+      //
+    };
+
+    static void OpenSettings(void)
+    {
+      //
+    };
 };
