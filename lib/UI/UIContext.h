@@ -5,6 +5,24 @@
 #include "LCD.h"
 #include "Menu/MainMenu.h"
 #include "Menu/ConfigMenu.h"
+#include "SimpleMath.h"
+
+struct CustomCursor
+{
+    uint8_t id_;
+    uint8_t data[8] = {
+        B00000,
+        B01000,
+        B01100,
+        B01110,
+        B01100,
+        B01000,
+        B00000,
+    };
+
+    uint8_t pos_col;
+    uint8_t pos_row;
+};
 
 /**
  * TODO: Adicionar documentação de uso
@@ -22,6 +40,9 @@ class UIContext
         Menu menus[UI_CTX_MAX_MENU];
 
         // [ MENU_INICIAL, MENU_CONFIG, MENU_DISPOSITIVO, MENU_CONFIG_NOVA_MISSAO ]
+
+        CustomCursor CCursor;
+        bool is_draw_frame = false; // Used to animate UI
 
         void InitMenus()
         {
@@ -45,11 +66,19 @@ class UIContext
             display_ = new LCD();
 
             InitMenus();
+            CreateCustomCursor();
+
         }
 
-        DisplayDevice* GetRawDisplay()
+        void CreateCustomCursor()
         {
-            return display_;
+            CCursor.id_ = 0;
+            GetRawDisplay()->createChar(byte(0), CCursor.data);
+        }
+
+        LiquidCrystal* GetRawDisplay()
+        {
+            return display_->GetRawDevice();
         }
 
         //#region Drawing
@@ -62,24 +91,34 @@ class UIContext
 
             LiquidCrystal* rawDevice = display_->GetRawDevice();
 
-
-            unsigned char bound = m.GetNumOptions();
+            uint8_t bound = m.GetNumOptions();
             const Option* opts = m.GetOptions();
 
-            unsigned char filled_row = 0;
+            uint8_t max_offset = RoundIntDiv(bound, LCD_HEIGHT) - 1;
+            uint8_t per_page = (bound < LCD_HEIGHT) ? bound : LCD_HEIGHT;
 
-            rawDevice->print(opts[0].nome);
-            rawDevice->setCursor(0, 1);
-            rawDevice->println(opts[1].nome);
+            uint8_t offset = 0; // TODO: Manipular offset baseado em inputs do teclado
 
-            // for(int i = 0; i < bound; i++)
-            // {
-            //     // rawDevice->print(opts[i].nome);
-            //     // rawDevice->setCursor(0, i);
-            // }
+            if(offset > max_offset) // Overflow pro começo da lista
+                offset = 1;
 
-            delay(500);
-            rawDevice->clear();
+            for(uint8_t i = 0; i < per_page; i++)
+            {
+                rawDevice->setCursor(1, i);
+                rawDevice->print(opts[i + offset].nome);
+            }
+
+            // Draw Custom Cursor
+            rawDevice->setCursor(0, 0);
+
+            is_draw_frame = !is_draw_frame;
+
+            if(is_draw_frame)
+                rawDevice->write(byte(CCursor.id_));
+            else
+                rawDevice->print(" ");
+
+            display_->Refresh();
         }
 
         //#endregion
