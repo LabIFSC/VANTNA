@@ -45,24 +45,23 @@ class LCDKeyboard
     // Parse button from value
     BTN_ID btn_id;
 
-    if(value >= 1015 && value < 1025) btn_id = BTN_NONE;
-    if(value > 300 && value < 310) btn_id = BTN_DOWN;
-    if(value > 125 && value < 135) btn_id = BTN_UP;
+    if(value >= 1015 && value <= 1025) btn_id = BTN_NONE;
+    if(value >= 300 && value <= 310) btn_id = BTN_DOWN;
+    if(value >= 125 && value <= 135) btn_id = BTN_UP;
 
     if(previous_frame_btn == BTN_NONE && btn_id != BTN_NONE)
     {
-      // Callback?
+      // OnKeypress Callback?
     }
 
-    if(previous_frame_btn == btn_id)
-      return;
+    if(previous_frame_btn != btn_id)
+      SetState(btn_id);
+
+    deltaTime = millis();
 
     if(btn_id == BTN_NONE)
     {
       // TODO: BTN_RELEASED event
     }
-
-    SetState(btn_id);
-    deltaTime = millis();
   }
 };

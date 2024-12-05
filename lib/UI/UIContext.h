@@ -25,6 +25,16 @@ struct CustomCursor
     uint8_t pos_row = 0;
 };
 
+struct UIState
+{
+    uint8_t frame_counter = 0;
+    bool is_draw_frame = false; // Used to animate blinking cursor
+
+    uint8_t offset;             // TODO: Manipular offset baseado em inputs do teclado
+    uint8_t max_offset;         // Prevent overflows
+    uint8_t per_page;           // Bound max rows either by LCD_HEIGHT or number of items to display (as long as they are < LCD_HEIGHT)
+};
+
 /**
  * TODO: Adicionar documentação de uso
  * - Inicializar um tipo de display (No caso, o LCD)
@@ -43,20 +53,13 @@ class UIContext
 
         // [ MENU_INICIAL, MENU_CONFIG, MENU_DISPOSITIVO, MENU_CONFIG_NOVA_MISSAO ]
 
+        UIState ui_state;
         CustomCursor CCursor;
-
-        // UI States
-        uint8_t frame_counter = 0;
-        bool is_draw_frame = false; // Used to animate blinking cursor
-
-        uint8_t offset;             // TODO: Manipular offset baseado em inputs do teclado
-        uint8_t max_offset;         // Prevent overflows
-        uint8_t per_page;           // Bound max rows either by LCD_HEIGHT or number of items to display (as long as they are < LCD_HEIGHT)
 
         void InitMenus()
         {
-            MainMenu main; // TODO: Testar se não causa SegFault;
-            ConfigMenu config; // TODO: Testar se não causa SegFault;
+            MainMenu main;          // TODO: Testar se não causa SegFault;
+            ConfigMenu config;      // TODO: Testar se não causa SegFault;
 
             RegistrarMenu(main);
             RegistrarMenu(config);
@@ -102,37 +105,34 @@ class UIContext
 
             uint8_t bound = m.GetNumOptions();
 
-            per_page = (bound < LCD_HEIGHT) ? bound : LCD_HEIGHT;
-            max_offset = RoundIntDiv(bound, LCD_HEIGHT) - 1;
+            ui_state.per_page = (bound < LCD_HEIGHT) ? bound : LCD_HEIGHT;
+            ui_state.max_offset = RoundIntDiv(bound, LCD_HEIGHT) - 1;
 
             if(keyboard_->IsBtnDown(BTN_DOWN))
             {
-                offset++;
+                ui_state.offset++;
             }
 
             // ...
-            if((offset > (max_offset + 1))) // Overflow pro começo da lista
+            if((ui_state.offset > (ui_state.max_offset + 1))) // Overflow pro começo da lista
             {
-                offset = 0;
+                ui_state.offset = 0;
                 CCursor.pos_row = 0;
 
                 // TODO: Limpar buffer
             }
-
-            // Toggles flag to draw animated cursor every other refresh window
-            UpdateDrawFrameFlag();
         }
 
-        void UpdateDrawFrameFlag()
+        void UpdateFrameCounter()
         {
-            if(frame_counter > 60)
+            if(ui_state.frame_counter > 60)
             {
-                frame_counter = 0;
-                is_draw_frame = !is_draw_frame;
+                ui_state.frame_counter = 0;
+                ui_state.is_draw_frame = !ui_state.is_draw_frame;
                 return;
             }
 
-            frame_counter++;
+            ui_state.frame_counter++;
         }
 
         void Draw()
@@ -145,7 +145,7 @@ class UIContext
             // Draw Custom Cursor
             rawDevice->setCursor(CCursor.pos_col, CCursor.pos_row);
 
-            if(is_draw_frame)
+            if(ui_state.is_draw_frame)
                 rawDevice->write(byte(CCursor.id_));
             else
             {
@@ -159,19 +159,21 @@ class UIContext
             const Option* opts = MenuAtual().GetOptions();
             uint8_t n_options = MenuAtual().GetNumOptions() - 1;
 
-            for(uint8_t i = 0; i < per_page; i++)
+            for(uint8_t i = 0; i < ui_state.per_page; i++)
             {
                 rawDevice->setCursor(1, i);
 
-                if((i + offset) > n_options)
+                if((i + ui_state.offset) > n_options)
                 {
-                    rawDevice->print("                ");
+                    // TODO: Limpar buffer
+                    continue;
                 }
-                else
-                {
-                    rawDevice->print(opts[i + offset].nome);
-                }
+
+                rawDevice->print(opts[i + ui_state.offset].nome);
             }
+
+            // Toggles flag to draw animated cursor every other refresh window
+            UpdateFrameCounter();
 
             display_->Refresh();
         }
