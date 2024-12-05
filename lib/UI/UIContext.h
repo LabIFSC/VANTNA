@@ -113,6 +113,12 @@ class UIContext
                 ui_state.offset++;
             }
 
+            if(keyboard_->IsBtnDown(BTN_SELECT))
+            {
+                // TODO: Executa callback do indice atual selecionado do menu
+                MenuAtual().GetOptions()[ui_state.offset + CCursor.pos_row].callback();
+            }
+
             // ...
             if((ui_state.offset > (ui_state.max_offset + 1))) // Overflow pro começo da lista
             {
@@ -165,7 +171,7 @@ class UIContext
 
                 if((i + ui_state.offset) > n_options)
                 {
-                    // TODO: Limpar buffer
+                    rawDevice->print("                    ");
                     continue;
                 }
 
