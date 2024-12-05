@@ -35,6 +35,7 @@ void setup()
 void loop() 
 {
   // UI.GetRawDisplay()->Print("Rodou");
+  UI.Update();
   UI.Draw();
 
   // Exibir lista de opcoes do menu principal

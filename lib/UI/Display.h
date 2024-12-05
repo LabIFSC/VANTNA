@@ -6,6 +6,8 @@
 class DisplayDevice
 {
     LiquidCrystal* driver;
+
+    unsigned long ms_counter = 0;
     unsigned long default_refresh_rate = 1000;
 
     public:
@@ -21,7 +23,12 @@ class DisplayDevice
             if(ms != 1000)
                 freq = ms;
 
-            delay(freq);
-            driver->clear();
+            ms_counter++;
+            
+            if(ms_counter >= ms)
+            {
+                ms_counter = 0;
+                driver->clear();
+            }
         }
 };

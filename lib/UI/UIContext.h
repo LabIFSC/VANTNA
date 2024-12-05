@@ -6,6 +6,7 @@
 #include "Menu/MainMenu.h"
 #include "Menu/ConfigMenu.h"
 #include "SimpleMath.h"
+#include "LCDKeyboard.h"
 
 struct CustomCursor
 {
@@ -20,8 +21,8 @@ struct CustomCursor
         B00000,
     };
 
-    uint8_t pos_col;
-    uint8_t pos_row;
+    uint8_t pos_col = 0;
+    uint8_t pos_row = 0;
 };
 
 /**
@@ -34,6 +35,7 @@ class UIContext
 {
     private:
         DisplayDevice* display_;
+        LCDKeyboard* keyboard_;
 
         MID menu_idx;
         unsigned char menu_counter;
@@ -42,7 +44,14 @@ class UIContext
         // [ MENU_INICIAL, MENU_CONFIG, MENU_DISPOSITIVO, MENU_CONFIG_NOVA_MISSAO ]
 
         CustomCursor CCursor;
-        bool is_draw_frame = false; // Used to animate UI
+
+        // UI States
+        uint8_t frame_counter = 0;
+        bool is_draw_frame = false; // Used to animate blinking cursor
+
+        uint8_t offset;             // TODO: Manipular offset baseado em inputs do teclado
+        uint8_t max_offset;         // Prevent overflows
+        uint8_t per_page;           // Bound max rows either by LCD_HEIGHT or number of items to display (as long as they are < LCD_HEIGHT)
 
         void InitMenus()
         {
@@ -64,11 +73,12 @@ class UIContext
         {
             // Hardcoded display device to LCD
             display_ = new LCD();
+            keyboard_ = new LCDKeyboard();
 
             InitMenus();
             CreateCustomCursor();
-
         }
+
 
         void CreateCustomCursor()
         {
@@ -83,40 +93,85 @@ class UIContext
 
         //#region Drawing
 
+        void Update()
+        {
+            keyboard_->PoolEvents();
+
+            // Process how current menu should be drawn
+            Menu m = MenuAtual();
+
+            uint8_t bound = m.GetNumOptions();
+
+            per_page = (bound < LCD_HEIGHT) ? bound : LCD_HEIGHT;
+            max_offset = RoundIntDiv(bound, LCD_HEIGHT) - 1;
+
+            if(keyboard_->IsBtnDown(BTN_DOWN))
+            {
+                offset++;
+            }
+
+            // ...
+            if((offset > (max_offset + 1))) // Overflow pro começo da lista
+            {
+                offset = 0;
+                CCursor.pos_row = 0;
+
+                // TODO: Limpar buffer
+            }
+
+            // Toggles flag to draw animated cursor every other refresh window
+            UpdateDrawFrameFlag();
+        }
+
+        void UpdateDrawFrameFlag()
+        {
+            if(frame_counter > 60)
+            {
+                frame_counter = 0;
+                is_draw_frame = !is_draw_frame;
+                return;
+            }
+
+            frame_counter++;
+        }
+
         void Draw()
         {
-            Menu m = MenuAtual();
 
             // ... for each menu
 
             LiquidCrystal* rawDevice = display_->GetRawDevice();
 
-            uint8_t bound = m.GetNumOptions();
-            const Option* opts = m.GetOptions();
-
-            uint8_t max_offset = RoundIntDiv(bound, LCD_HEIGHT) - 1;
-            uint8_t per_page = (bound < LCD_HEIGHT) ? bound : LCD_HEIGHT;
-
-            uint8_t offset = 0; // TODO: Manipular offset baseado em inputs do teclado
-
-            if(offset > max_offset) // Overflow pro começo da lista
-                offset = 1;
-
-            for(uint8_t i = 0; i < per_page; i++)
-            {
-                rawDevice->setCursor(1, i);
-                rawDevice->print(opts[i + offset].nome);
-            }
-
             // Draw Custom Cursor
-            rawDevice->setCursor(0, 0);
-
-            is_draw_frame = !is_draw_frame;
+            rawDevice->setCursor(CCursor.pos_col, CCursor.pos_row);
 
             if(is_draw_frame)
                 rawDevice->write(byte(CCursor.id_));
             else
+            {
+                // Clear both cells from cursor column
+                rawDevice->setCursor(0, 0);
                 rawDevice->print(" ");
+                rawDevice->setCursor(0, 1);
+                rawDevice->print(" ");
+            }
+
+            const Option* opts = MenuAtual().GetOptions();
+            uint8_t n_options = MenuAtual().GetNumOptions() - 1;
+
+            for(uint8_t i = 0; i < per_page; i++)
+            {
+                rawDevice->setCursor(1, i);
+
+                if((i + offset) > n_options)
+                {
+                    rawDevice->print("                ");
+                }
+                else
+                {
+                    rawDevice->print(opts[i + offset].nome);
+                }
+            }
 
             display_->Refresh();
         }

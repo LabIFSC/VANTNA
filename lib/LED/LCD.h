@@ -29,6 +29,7 @@ class LCD : public DisplayDevice
     void Setup()
     {
         driver->begin(LCD_WIDTH, LCD_HEIGHT);
+        driver->noAutoscroll();
         driver->clear();
     }
 
