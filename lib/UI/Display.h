@@ -3,12 +3,13 @@
 #include "wiring_private.h"
 #include "LiquidCrystal.h"
 
+#define DEF_REFRESH_RATE_MS 1000
+
 class DisplayDevice
 {
     LiquidCrystal* driver;
 
     unsigned long ms_counter = 0;
-    unsigned long default_refresh_rate = 1000;
 
     public:
         virtual LiquidCrystal* GetRawDevice();
@@ -17,12 +18,8 @@ class DisplayDevice
          * Clears the screen at specified `refresh_rate` interval in ms.
          * Default: `1000ms`
          */
-        void Refresh(unsigned long ms = 1000)
+        void Refresh(unsigned long ms = DEF_REFRESH_RATE_MS)
         {
-            unsigned long freq = default_refresh_rate;
-            if(ms != 1000)
-                freq = ms;
-
             ms_counter++;
             
             if(ms_counter >= ms)
