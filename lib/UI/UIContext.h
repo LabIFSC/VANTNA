@@ -5,6 +5,35 @@
 #include "LCD.h"
 #include "Menu/MainMenu.h"
 #include "Menu/ConfigMenu.h"
+#include "SimpleMath.h"
+#include "LCDKeyboard.h"
+
+struct CustomCursor
+{
+    uint8_t id_;
+    uint8_t data[8] = {
+        B00000,
+        B01000,
+        B01100,
+        B01110,
+        B01100,
+        B01000,
+        B00000,
+    };
+
+    uint8_t pos_col = 0;
+    uint8_t pos_row = 0;
+};
+
+struct UIState
+{
+    uint8_t frame_counter = 0;
+    bool is_draw_frame = false; // Used to animate blinking cursor
+
+    uint8_t offset;             // TODO: Manipular offset baseado em inputs do teclado
+    uint8_t max_offset;         // Prevent overflows
+    uint8_t per_page;           // Bound max rows either by LCD_HEIGHT or number of items to display (as long as they are < LCD_HEIGHT)
+};
 
 /**
  * TODO: Adicionar documentação de uso
@@ -16,6 +45,7 @@ class UIContext
 {
     private:
         DisplayDevice* display_;
+        LCDKeyboard* keyboard_;
 
         MID menu_idx;
         unsigned char menu_counter;
@@ -23,10 +53,13 @@ class UIContext
 
         // [ MENU_INICIAL, MENU_CONFIG, MENU_DISPOSITIVO, MENU_CONFIG_NOVA_MISSAO ]
 
+        UIState ui_state;
+        CustomCursor CCursor;
+
         void InitMenus()
         {
-            MainMenu main; // TODO: Testar se não causa SegFault;
-            ConfigMenu config; // TODO: Testar se não causa SegFault;
+            MainMenu main;          // TODO: Testar se não causa SegFault;
+            ConfigMenu config;      // TODO: Testar se não causa SegFault;
 
             RegistrarMenu(main);
             RegistrarMenu(config);
@@ -43,43 +76,112 @@ class UIContext
         {
             // Hardcoded display device to LCD
             display_ = new LCD();
+            keyboard_ = new LCDKeyboard();
 
             InitMenus();
+            CreateCustomCursor();
         }
 
-        DisplayDevice* GetRawDisplay()
+
+        void CreateCustomCursor()
         {
-            return display_;
+            CCursor.id_ = 0;
+            GetRawDisplay()->createChar(byte(0), CCursor.data);
+        }
+
+        LiquidCrystal* GetRawDisplay()
+        {
+            return display_->GetRawDevice();
         }
 
         //#region Drawing
 
+        void Update()
+        {
+            keyboard_->PoolEvents();
+
+            // Process how current menu should be drawn
+            Menu m = MenuAtual();
+
+            uint8_t bound = m.GetNumOptions();
+
+            ui_state.per_page = (bound < LCD_HEIGHT) ? bound : LCD_HEIGHT;
+            ui_state.max_offset = RoundIntDiv(bound, LCD_HEIGHT) - 1;
+
+            if(keyboard_->IsBtnDown(BTN_DOWN))
+            {
+                ui_state.offset++;
+            }
+
+            if(keyboard_->IsBtnDown(BTN_SELECT))
+            {
+                // TODO: Executa callback do indice atual selecionado do menu
+                MenuAtual().GetOptions()[ui_state.offset + CCursor.pos_row].callback();
+            }
+
+            // ...
+            if((ui_state.offset > (ui_state.max_offset + 1))) // Overflow pro começo da lista
+            {
+                ui_state.offset = 0;
+                CCursor.pos_row = 0;
+
+                // TODO: Limpar buffer
+            }
+        }
+
+        void UpdateFrameCounter()
+        {
+            if(ui_state.frame_counter > 60)
+            {
+                ui_state.frame_counter = 0;
+                ui_state.is_draw_frame = !ui_state.is_draw_frame;
+                return;
+            }
+
+            ui_state.frame_counter++;
+        }
+
         void Draw()
         {
-            Menu m = MenuAtual();
 
             // ... for each menu
 
             LiquidCrystal* rawDevice = display_->GetRawDevice();
 
+            // Draw Custom Cursor
+            rawDevice->setCursor(CCursor.pos_col, CCursor.pos_row);
 
-            unsigned char bound = m.GetNumOptions();
-            const Option* opts = m.GetOptions();
+            if(ui_state.is_draw_frame)
+                rawDevice->write(byte(CCursor.id_));
+            else
+            {
+                // Clear both cells from cursor column
+                rawDevice->setCursor(0, 0);
+                rawDevice->print(" ");
+                rawDevice->setCursor(0, 1);
+                rawDevice->print(" ");
+            }
 
-            unsigned char filled_row = 0;
+            const Option* opts = MenuAtual().GetOptions();
+            uint8_t n_options = MenuAtual().GetNumOptions() - 1;
 
-            rawDevice->print(opts[0].nome);
-            rawDevice->setCursor(0, 1);
-            rawDevice->println(opts[1].nome);
+            for(uint8_t i = 0; i < ui_state.per_page; i++)
+            {
+                rawDevice->setCursor(1, i);
 
-            // for(int i = 0; i < bound; i++)
-            // {
-            //     // rawDevice->print(opts[i].nome);
-            //     // rawDevice->setCursor(0, i);
-            // }
+                if((i + ui_state.offset) > n_options)
+                {
+                    rawDevice->print("                    ");
+                    continue;
+                }
 
-            delay(500);
-            rawDevice->clear();
+                rawDevice->print(opts[i + ui_state.offset].nome);
+            }
+
+            // Toggles flag to draw animated cursor every other refresh window
+            UpdateFrameCounter();
+
+            display_->Refresh();
         }
 
         //#endregion

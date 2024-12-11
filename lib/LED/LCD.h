@@ -23,11 +23,13 @@ class LCD : public DisplayDevice
     LCD()
     {
         driver = new LiquidCrystal(PIN_RS, PIN_EN, PIN_D4, PIN_D5, PIN_D6, PIN_D7);
+        Setup();
     }
 
     void Setup()
     {
         driver->begin(LCD_WIDTH, LCD_HEIGHT);
+        driver->noAutoscroll();
         driver->clear();
     }
 

@@ -1,6 +1,5 @@
-class Coordenada
+struct Coordenada
 {
     float latitude; float longitude;
-    
 };
 

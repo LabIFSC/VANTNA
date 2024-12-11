@@ -4,11 +4,12 @@
 #define MENU_OPCOES_N 6
 
 typedef unsigned char MID;
+typedef void (*Action)(void);
 
 struct Option
 {
     String nome;
-    void (*acao)(void);
+    Action callback;
 };
 
 class Menu

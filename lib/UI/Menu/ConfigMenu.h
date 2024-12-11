@@ -1,10 +1,6 @@
 #include "Menu.h"
 #include "UISettings.h"
 
-// TODO: Implementar
-void ExibirMissao();
-void AddCoords();
-
 class ConfigMenu : public Menu
 {
   public:
@@ -15,4 +11,8 @@ class ConfigMenu : public Menu
 
       this->n_opts = 2;
     }
+
+    static void ExibirMissao() {};
+
+    static void AddCoords() {};
 };
