@@ -63,8 +63,10 @@ void loop()
   // UI.Update();
   // UI.Draw();
   // TODO: Piloto automático
+  // Ver: https://stackoverflow.com/questions/67017134/find-rotation-matrix-to-align-two-vectors
+  // Ver: https://stackoverflow.com/questions/55169099/animating-a-3d-vector
   // 1 - Definir ponto inicial (ix, iy) Ponto final (dx, dy)
-  // 2 - Calcular hipotenusa do triangulo retângulo formado pelos pontos ((dx-ix), (dy-iy))
+  // 2 - Calcular hipotenusa do triangulo retângulo formado pelos pontos ((dx-ix), (dy-iy)) | Também é distância a ser percorrida
   // 3 - Calcular o ângulo a partir da posição atual e o destino
   //   - Realizar operação nos motores para reduzir o ângulo até 0
 
