@@ -62,6 +62,11 @@ void loop()
 
   // UI.Update();
   // UI.Draw();
+  // TODO: Piloto automático
+  // 1 - Definir ponto inicial (ix, iy) Ponto final (dx, dy)
+  // 2 - Calcular hipotenusa do triangulo retângulo formado pelos pontos ((dx-ix), (dy-iy))
+  // 3 - Calcular o ângulo a partir da posição atual e o destino
+  //   - Realizar operação nos motores para reduzir o ângulo até 0
 
   // Exibir lista de opcoes do menu principal
   // TODO: Controle de rotinas: Definir quanto tempo deve ser alocado para cada tarefa
