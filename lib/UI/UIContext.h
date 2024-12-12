@@ -44,7 +44,7 @@ struct UIState
 class UIContext
 {
     private:
-        DisplayDevice* display_;
+        LCD* display_;
         LCDKeyboard* keyboard_;
 
         MID menu_idx;
@@ -72,11 +72,10 @@ class UIContext
 
     public:
 
-        UIContext()
+        UIContext(LCDSettings lcd_settings, uint8_t keyboard_pin)
         {
-            // Hardcoded display device to LCD
-            display_ = new LCD();
-            keyboard_ = new LCDKeyboard();
+            display_ = new LCD(lcd_settings);
+            keyboard_ = new LCDKeyboard(keyboard_pin);
 
             InitMenus();
             CreateCustomCursor();
@@ -86,12 +85,7 @@ class UIContext
         void CreateCustomCursor()
         {
             CCursor.id_ = 0;
-            GetRawDisplay()->createChar(byte(0), CCursor.data);
-        }
-
-        LiquidCrystal* GetRawDisplay()
-        {
-            return display_->GetRawDevice();
+            display_->createChar(byte(0), CCursor.data);
         }
 
         //#region Drawing
@@ -146,20 +140,18 @@ class UIContext
 
             // ... for each menu
 
-            LiquidCrystal* rawDevice = display_->GetRawDevice();
-
             // Draw Custom Cursor
-            rawDevice->setCursor(CCursor.pos_col, CCursor.pos_row);
+            display_->setCursor(CCursor.pos_col, CCursor.pos_row);
 
             if(ui_state.is_draw_frame)
-                rawDevice->write(byte(CCursor.id_));
+                display_->write(byte(CCursor.id_));
             else
             {
                 // Clear both cells from cursor column
-                rawDevice->setCursor(0, 0);
-                rawDevice->print(" ");
-                rawDevice->setCursor(0, 1);
-                rawDevice->print(" ");
+                display_->setCursor(0, 0);
+                display_->print(" ");
+                display_->setCursor(0, 1);
+                display_->print(" ");
             }
 
             const Option* opts = MenuAtual().GetOptions();
@@ -167,15 +159,15 @@ class UIContext
 
             for(uint8_t i = 0; i < ui_state.per_page; i++)
             {
-                rawDevice->setCursor(1, i);
+                display_->setCursor(1, i);
 
                 if((i + ui_state.offset) > n_options)
                 {
-                    rawDevice->print("                    ");
+                    display_->print("                    ");
                     continue;
                 }
 
-                rawDevice->print(opts[i + ui_state.offset].nome);
+                display_->print(opts[i + ui_state.offset].nome);
             }
 
             // Toggles flag to draw animated cursor every other refresh window

@@ -5,27 +5,16 @@
 
 #define DEF_REFRESH_RATE_MS 1000
 
-class DisplayDevice
+class IRefreshable
 {
-    LiquidCrystal* driver;
-
-    unsigned long ms_counter = 0;
+    protected:
+        unsigned long ms_counter = 0;
 
     public:
-        virtual LiquidCrystal* GetRawDevice();
 
         /**
          * Clears the screen at specified `refresh_rate` interval in ms.
          * Default: `1000ms`
          */
-        void Refresh(unsigned long ms = DEF_REFRESH_RATE_MS)
-        {
-            ms_counter++;
-            
-            if(ms_counter >= ms)
-            {
-                ms_counter = 0;
-                driver->clear();
-            }
-        }
+        virtual void Refresh(unsigned long ms = DEF_REFRESH_RATE_MS) = 0;
 };

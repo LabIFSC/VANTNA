@@ -3,54 +3,45 @@
 #define LCD_WIDTH 0x0F
 #define LCD_HEIGHT 0x02
 
-//******* CONFIGURACAO DO LCD *********
-#define PIN_Botoes A0
-
-#define PIN_RS 8
-#define PIN_EN 9
-#define PIN_D4 4
-#define PIN_D5 5
-#define PIN_D6 6
-#define PIN_D7 7
-#define PIN_BACKLIGHT 10
-//*****************************************
-
-class LCD : public DisplayDevice
+struct LCDSettings
 {
-    LiquidCrystal* driver;
+  uint8_t pin_rs;
+  uint8_t pin_es;
+  uint8_t pin_d4;
+  uint8_t pin_d5;
+  uint8_t pin_d6;
+  uint8_t pin_d7;
+  uint8_t pin_backlight;
+};
 
+class LCD : public LiquidCrystal, public IRefreshable
+{
     public:
-    LCD()
+    LCD(LCDSettings settings) :
+        LiquidCrystal(settings.pin_rs, settings.pin_es, settings.pin_d4, settings.pin_d5, settings.pin_d6, settings.pin_d7)
     {
-        driver = new LiquidCrystal(PIN_RS, PIN_EN, PIN_D4, PIN_D5, PIN_D6, PIN_D7);
         Setup();
     }
 
     void Setup()
     {
-        driver->begin(LCD_WIDTH, LCD_HEIGHT);
-        driver->noAutoscroll();
-        driver->clear();
+        begin(LCD_WIDTH, LCD_HEIGHT);
+        noAutoscroll();
+        clear();
     }
 
-    LiquidCrystal* GetRawDevice()
+    /**
+     * Clears the screen at specified `refresh_rate` interval in ms.
+     * Default: `1000ms`
+     */
+    void Refresh(unsigned long ms = DEF_REFRESH_RATE_MS)
     {
-        return driver;
-    }
-
-    void Print(const String&s)
-    {
-        driver->print(s);
-    }
-
-    void PrintLine(const String&s)
-    {
-        driver->println(s);
-    }
-
-    void Clear()
-    {
-        driver->clear();
-        driver->home();
+        ms_counter++;
+        
+        if(ms_counter >= ms)
+        {
+            ms_counter = 0;
+            clear();
+        }
     }
 };
