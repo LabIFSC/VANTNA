@@ -23,11 +23,20 @@
 /** Shield Keyboard Settings */
 #define PIN_KINPUT A0
 
+/** Motors Settings */
+#define LMOTOR_IN1 50
+#define LMOTOR_IN2 48
+#define HBRIDGE_ENA 2
+
+#define RMOTOR_IN1 51   // IN3
+#define RMOTOR_IN2 49   // IN4
+#define HBRIDGE_ENB 3
+
 
 /** Init dispositivos e periféricos */
 // Cria os objetos motor1 e motor2 utilizando o construtor Motor(pin1 , pin2, enable)
-Motor M_bb(50, 48, 2); /** In1 | In2 | EnableA */
-Motor M_be(51, 49, 3); /** In3 | In4 | EnableB */
+Motor M_bb(LMOTOR_IN1, LMOTOR_IN2, HBRIDGE_ENA);
+Motor M_be(RMOTOR_IN1, RMOTOR_IN2, HBRIDGE_ENB);
 
 Bussola B;
 GPS GPS_A;
@@ -39,10 +48,15 @@ void setup()
   /** Inicializar subsistemas */
   M_bb.setup();
   M_be.setup();
+
+  GPS_A.setUp();
 }
 
 void loop() 
 {
+  GPS_A.loop();
+
+  /** Só roda se a porta H tiver ligada */
   M_be.gira_horario(127);
   M_bb.gira_horario(127);
 
