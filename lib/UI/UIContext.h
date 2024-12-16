@@ -44,8 +44,6 @@ struct UIState
 class UIContext
 {
     private:
-        LCD* display_;
-        LCDKeyboard* keyboard_;
 
         MID menu_idx;
         unsigned char menu_counter;
@@ -71,6 +69,8 @@ class UIContext
         static UIContext& self_;
 
     public:
+        LCD* display_;
+        LCDKeyboard* keyboard_;
 
         UIContext(LCDSettings lcd_settings, uint8_t keyboard_pin)
         {
@@ -175,8 +175,28 @@ class UIContext
 
             display_->Refresh();
         }
+        
 
         //#endregion
+
+        void PrintRaw(const char* message, int val = 0)
+        {
+            display_->setCursor(0, 0);
+
+            display_->println(message);
+            if(val > 0)
+            {
+                display_->setCursor(0, 1);
+                display_->print(val);   
+            }
+        }
+
+        void RefreshRaw()
+        {
+            // UpdateFrameCounter();
+            ui_state.is_draw_frame = true;
+            display_->Refresh();
+        }
 
         const Menu& MenuAtual()
         {

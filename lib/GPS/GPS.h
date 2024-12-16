@@ -3,6 +3,7 @@
  */
 #include <SoftwareSerial.h>
 #include <TinyGPS.h>
+#include "Coordenada.h"
 
 #define SS_RX_PIN 32
 #define SS_TX_PIN 33
@@ -12,11 +13,22 @@ TinyGPS gps;
 
 class GPS
 {
+private:
+    float flat_, flon_;
+    unsigned long age_;
+
 public:
+    bool is_ready;
+
     void setUp()
     {
         Serial.begin(9600);
-        Serial1.begin(4800);
+        Serial1.begin(9600);
+    }
+
+    Coordenada get_coordenda()
+    {
+        return Coordenada(flat_, flon_);
     }
 
     void loop()
@@ -41,29 +53,31 @@ public:
         Serial.print(" SAT = ");
         Serial.println(gps.satellites() == TinyGPS::GPS_INVALID_SATELLITES ? 0 : gps.satellites());
 
+        is_ready = newData; // true
         if (newData) // false
         {
-            float flat, flon;
-            unsigned long age;
-            gps.f_get_position(&flat, &flon, &age);
-            Serial.print("LAT=");
-            Serial.print(flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flat, 6);
-            Serial.print(" LON=");
-            Serial.print(flon == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flon, 6);
-            Serial.print(" SAT=");
-            Serial.print(gps.satellites() == TinyGPS::GPS_INVALID_SATELLITES ? 0 : gps.satellites());
-            Serial.print(" PREC=");
-            Serial.print(gps.hdop() == TinyGPS::GPS_INVALID_HDOP ? 0 : gps.hdop());
+            // float flat, flon;
+            // unsigned long age;
+            gps.f_get_position(&flat_, &flon_, &age_);
+            // Serial.print("LAT=");
+            // Serial.print(flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flat, 6);
+            // Serial.print(" LON=");
+            // Serial.print(flon == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flon, 6);
+            // Serial.print(" SAT=");
+            // Serial.print(gps.satellites() == TinyGPS::GPS_INVALID_SATELLITES ? 0 : gps.satellites());
+            // Serial.print(" PREC=");
+            // Serial.print(gps.hdop() == TinyGPS::GPS_INVALID_HDOP ? 0 : gps.hdop());
         }
 
-        gps.stats(&chars, &sentences, &failed);
-        Serial.print(" CHARS=");
-        Serial.print(chars);
-        Serial.print(" SENTENCES=");
-        Serial.print(sentences);
-        Serial.print(" CSUM ERR=");
-        Serial.println(failed);
-        if (chars == 0)
-            Serial.println("** No characters received from GPS: check wiring **");
-        }
+        // gps.stats(&chars, &sentences, &failed);
+        // Serial.print(" CHARS=");
+        // Serial.print(chars);
+        // Serial.print(" SENTENCES=");
+        // Serial.print(sentences);
+        // Serial.print(" CSUM ERR=");
+        // Serial.println(failed);
+        // if (chars == 0)
+        //     Serial.println("** No characters received from GPS: check wiring **");
+        // }
+    };
 };

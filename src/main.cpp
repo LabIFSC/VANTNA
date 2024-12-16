@@ -5,6 +5,7 @@
 #include "LED.h"
 #include "GPS.h"
 #include "UIContext.h"
+#include "Coordenada.h"
 
 /**
  * LCD Driver Settings
@@ -50,18 +51,86 @@ void setup()
   M_be.setup();
 
   GPS_A.setUp();
+  Serial.begin(9600);
 }
 
-void loop() 
+// wayPoint1: -26.931230, -48.685413
+
+// wayPoint2: -26.931322, -48.685221
+/*
+Coordenada wp1(-26.927810, -48.646708);
+Coordenada wp2(-26.91465439955142, -48.64670090616903);
+*/
+
+Coordenada wp1(-26.931230, -48.685413);
+Coordenada wp2(-26.931322, -48.685221);
+
+#define MARGEM_DE_ERRO 1 // metro
+
+double dist_;
+
+int counter = 0;
+
+void loop()
 {
   GPS_A.loop();
 
-  /** Só roda se a porta H tiver ligada */
-  M_be.gira_horario(127);
-  M_bb.gira_horario(127);
+  if(GPS_A.is_ready)
+  {
+    Coordenada ponto_atual = GPS_A.get_coordenda();
 
-  // UI.Update();
-  // UI.Draw();
+    dist_ = ponto_atual.distancia(wp1);
+
+    // TODO: Pegar diferença de angulo com bussola e girar o carrinho até zerar o angulo
+    // TODO: Iterar para  corrigir o angulo
+    // TODO: Girar motores até chegar no destino
+  }
+
+  if(counter >= 2)
+  {
+    counter = 0;
+    UI.display_->clear();
+
+    if(dist_ > 0)
+    {
+      UI.display_->setCursor(0,0);
+      UI.display_->println("Dist: ");
+      UI.display_->setCursor(0, 1);
+      UI.display_->print(dist_);
+    }
+    else
+    {
+      UI.display_->print("Procurando");
+      UI.display_->setCursor(0, 1);
+      UI.display_->println("Satelites...");
+    }
+  }
+
+  counter++;  
+
+
+  // Serial.print("Distancia:");
+  // Serial.print(wp2.distancia(wp1),16);
+  
+  // Serial.print(" Angulo:");
+  // Serial.println(wp2.calcularAngulo(wp1),16);
+  // delay(10000);
+
+}
+
+
+/*
+void loop() 
+{
+  
+  GPS_A.loop();
+
+  // --Só roda se a porta H tiver ligada
+  M_bb.gira_horario(127);
+  M_be.gira_horario(127);
+
+  UI.Update();
+  UI.Draw();
   // TODO: Piloto automático
   // Ver: https://stackoverflow.com/questions/67017134/find-rotation-matrix-to-align-two-vectors
   // Ver: https://stackoverflow.com/questions/55169099/animating-a-3d-vector
@@ -76,3 +145,4 @@ void loop()
   // A cada x frames/loops, chamar update do sistema
   // A cada x frames/loops, enviar os novos comandos para os motores
 }
+*/
