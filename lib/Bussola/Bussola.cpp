@@ -12,9 +12,9 @@ HMC5883L_Simple Compass;
 void Bussola::setUp()
 {
   Compass.SetDeclination(23, 35, 'E');  
-  Compass.SetSamplingMode(COMPASS_SINGLE);
+  Compass.SetSamplingMode(COMPASS_CONTINUOUS);
   Compass.SetScale(COMPASS_SCALE_130);
-  Compass.SetOrientation(COMPASS_HORIZONTAL_X_NORTH);
+  Compass.SetOrientation(COMPASS_VERTICAL_Y_WEST);
 }
 
 float Bussola::getAngulo()

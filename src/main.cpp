@@ -51,6 +51,7 @@ void setup()
   M_be.setup();
 
   GPS_A.setUp();
+  B.setUp();
   Serial.begin(9600);
 }
 
@@ -68,11 +69,14 @@ Coordenada wp2(-26.931322, -48.685221);
 #define MARGEM_DE_ERRO 1 // metro
 
 double dist_;
+double anguloDest_;
 
 int counter = 0;
 
 void loop()
 {
+  Serial.println(B.getAngulo());
+
   GPS_A.loop();
 
   if(GPS_A.is_ready)
@@ -80,6 +84,7 @@ void loop()
     Coordenada ponto_atual = GPS_A.get_coordenda();
 
     dist_ = ponto_atual.distancia(wp1);
+    anguloDest_ = ponto_atual.calcularAngulo(wp1);
 
     // TODO: Pegar diferença de angulo com bussola e girar o carrinho até zerar o angulo
     // TODO: Iterar para  corrigir o angulo
@@ -90,6 +95,11 @@ void loop()
   {
     counter = 0;
     UI.display_->clear();
+
+    // Serial.print("aB: "); Serial.print(B.getAngulo());
+    // Serial.print("aD: "); Serial.print(anguloDest_);
+
+    // Bussola: 00.00
 
     if(dist_ > 0)
     {
