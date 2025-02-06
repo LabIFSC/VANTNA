@@ -42,8 +42,6 @@ Motor M_be(RMOTOR_IN1, RMOTOR_IN2, HBRIDGE_ENB);
 Bussola B;
 GPS GPS_A;
 
-static UIContext UI((LCDSettings){ PIN_RS, PIN_EN, PIN_D4, PIN_D5, PIN_D6, PIN_D7 }, PIN_KINPUT);
-
 void setup() 
 {
   /** Inicializar subsistemas */

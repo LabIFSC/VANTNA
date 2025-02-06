@@ -8,6 +8,12 @@
 #include "SimpleMath.h"
 #include "LCDKeyboard.h"
 
+
+/*
+    How to instatiate the UIContext in the main application
+    static UIContext UI((LCDSettings){ PIN_RS, PIN_EN, PIN_D4, PIN_D5, PIN_D6, PIN_D7 }, PIN_KINPUT);
+*/
+
 struct CustomCursor
 {
     uint8_t id_;
