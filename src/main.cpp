@@ -2,27 +2,29 @@
 #include <Arduino.h>
 #include <Motor.h>
 #include "Bussola.h"
-#include "LED.h"
 #include "GPS.h"
-#include "UIContext.h"
 #include "Coordenada.h"
 
-/**
- * LCD Driver Settings
- * 
- * É preciso também definir LCD_PIN_OVERRITTEN para que esses valores sejam
- * reconhecidos. Do contrário, os valores defaults de LCD.h serão utilizados.
- */
-#define PIN_RS 8
-#define PIN_EN 9
-#define PIN_D4 4
-#define PIN_D5 5
-#define PIN_D6 6
-#define PIN_D7 7
-#define PIN_BACKLIGHT 10
+#ifdef USE_DISPLAY
+  #include "LED.h"
+  #include "UIContext.h"
+  /**
+   * LCD Driver Settings
+   * 
+   * É preciso também definir LCD_PIN_OVERRITTEN para que esses valores sejam
+   * reconhecidos. Do contrário, os valores defaults de LCD.h serão utilizados.
+   */
+  #define PIN_RS 8
+  #define PIN_EN 9
+  #define PIN_D4 4
+  #define PIN_D5 5
+  #define PIN_D6 6
+  #define PIN_D7 7
+  #define PIN_BACKLIGHT 10
 
-/** Shield Keyboard Settings */
-#define PIN_KINPUT A0
+  /** Shield Keyboard Settings */
+  #define PIN_KINPUT A0
+#endif
 
 /** Motors Settings */
 #define LMOTOR_IN1 50
